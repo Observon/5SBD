@@ -48,7 +48,20 @@ FROM conta c;
 
 -- Parte 3 – GROUP BY, HAVING, ROLLUP e Operadores de Conjunto (Seção 9)
 -- 9. Exiba a média de saldo por cidade dos clientes.
+--R:
+SELECT c.cidade, AVG(cc.saldo) AS "MÉDIA SALDO"
+FROM cliente c
+JOIN conta cc ON c.cliente_cod = cc.cliente_cliente_cod
+GROUP BY c.cidade;
+
 -- 10. Liste apenas as cidades com mais de 3 contas associadas a seus moradores.
+--R:
+SELECT c.cidade, COUNT(cc.conta_numero) AS "QUANTIDADE DE CONTAS"
+FROM cliente c
+JOIN conta cc ON c.cliente_cod = cc.cliente_cliente_cod
+GROUP BY c.cidade
+WHERE COUNT(cc.conta_numero) > 3;
+
 -- 11.Utilize a cláusula ROLLUP para exibir o total de saldos por cidade da agência e o total geral.
 -- 12. Faça uma consulta com UNION que combine os nomes de cidades dos clientes e das
 -- agências, sem repetições.
