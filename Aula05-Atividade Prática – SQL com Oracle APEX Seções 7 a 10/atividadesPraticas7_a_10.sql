@@ -16,18 +16,35 @@ WHERE c.cliente_cod = cc.cliente_cliente_cod;
 SELECT c.cliente_nome, a.agencia_nome
 FROM cliente c, agencia a;
 
--- 3. Usando aliases de tabela, exiba o nome dos clientes e a cidade da agência onde mantêm
--- conta.
+-- 3. Usando aliases de tabela, exiba o nome dos clientes e a cidade da agência onde mantêm conta.
 --R:
 SELECT c.cliente_nome, a.agencia_cidade
 
-
 -- Parte 2 – Funções de Grupo, COUNT, DISTINCT e NVL (Seção 8)
 -- 4. Exiba o saldo total de todas as contas cadastradas.
+--R:
+SELECT SUM(c.saldo) AS "SALDO TOTAL"
+FROM conta c;
+
 -- 5. Mostre o maior saldo e a média de saldo entre todas as contas.
+--R:
+SELECT MAX(c.saldo) AS "MAIOR SALDO", AVG(c.saldo) AS "MÉDIA SALDO"
+FROM conta c;
+
 -- 6. Apresente a quantidade total de contas cadastradas.
+--R:
+SELECT COUNT(c.conta_numero) AS "QUANTIDADE DE CONTAS"
+FROM conta c;
+
 -- 7. Liste o número de cidades distintas onde os clientes residem.
+--R:
+SELECT COUNT(DISTINCT c.cidade) AS "QUANTIDADE DE CIDADES"
+FROM cliente c;
+
 -- 8. Exiba o número da conta e o saldo, substituindo valores nulos por zero.
+--R:
+SELECT c.conta_numero, NVL(c.saldo, 0) AS "SALDO"
+FROM conta c;
 
 -- Parte 3 – GROUP BY, HAVING, ROLLUP e Operadores de Conjunto (Seção 9)
 -- 9. Exiba a média de saldo por cidade dos clientes.
