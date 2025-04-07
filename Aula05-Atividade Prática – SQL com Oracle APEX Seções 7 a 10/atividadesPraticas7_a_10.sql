@@ -19,6 +19,9 @@ FROM cliente c, agencia a;
 -- 3. Usando aliases de tabela, exiba o nome dos clientes e a cidade da agência onde mantêm conta.
 --R:
 SELECT c.cliente_nome, a.agencia_cidade
+FROM cliente c
+JOIN conta cc ON c.cliente_cod = cc.cliente_cliente_cod
+JOIN agencia a ON cc.agencia_agencia_cod = a.agencia_cod;
 
 -- Parte 2 – Funções de Grupo, COUNT, DISTINCT e NVL (Seção 8)
 -- 4. Exiba o saldo total de todas as contas cadastradas.
@@ -60,7 +63,7 @@ SELECT c.cidade, COUNT(cc.conta_numero) AS "QUANTIDADE DE CONTAS"
 FROM cliente c
 JOIN conta cc ON c.cliente_cod = cc.cliente_cliente_cod
 GROUP BY c.cidade
-WHERE COUNT(cc.conta_numero) > 3;
+HAVING COUNT(cc.conta_numero) > 3;
 
 -- 11.Utilize a cláusula ROLLUP para exibir o total de saldos por cidade da agência e o total geral.
 --R:
