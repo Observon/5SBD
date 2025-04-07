@@ -63,20 +63,47 @@ GROUP BY c.cidade
 WHERE COUNT(cc.conta_numero) > 3;
 
 -- 11.Utilize a cláusula ROLLUP para exibir o total de saldos por cidade da agência e o total geral.
--- 12. Faça uma consulta com UNION que combine os nomes de cidades dos clientes e das
--- agências, sem repetições.
+--R:
+SELECT a.agencia_cidade, SUM(cc.saldo) AS "TOTAL SALDO"
+FROM agencia a
+JOIN conta cc ON a.agencia_cod = cc.agencia_agencia_cod
+GROUP BY a.agencia_cidade WITH ROLLUP;
+
+-- 12. Faça uma consulta com UNION que combine os nomes de cidades dos clientes e das agências, sem repetições.
+--R:
+SELECT c.cidade AS "CIDADE"
+FROM cliente c
+UNION
+SELECT a.agencia_cidade AS "CIDADE"
+FROM agencia a;
 
 -- Atividade Prática – SQL com Oracle APEX
 -- Seção 10 – Subconsultas
--- Tema: Subconsultas de linha única, multilinha, correlacionadas, com EXISTS, NOT EXISTS e a cláusula
--- WITH.
+-- Tema: Subconsultas de linha única, multilinha, correlacionadas, com EXISTS, NOT EXISTS e a cláusula WITH.
 -- Ferramenta: Oracle APEX – SQL Workshop
 -- Base de dados utilizada: Sistema bancário (agencia, cliente, conta, emprestimo)
 
 -- Parte 1 – Subconsultas de Linha Única
 -- 1. Liste os nomes dos clientes cujas contas possuem saldo acima da média geral de todas as contas registradas.
+--R:
+SELECT c.cliente_nome
+FROM cliente c
+JOIN conta cc ON c.cliente_cod = cc.cliente_cliente_cod
+WHERE cc.saldo > (SELECT AVG(saldo) FROM conta);
+
 -- 2. Exiba os nomes dos clientes cujos saldos são iguais ao maior saldo encontrado no banco.
+--R:
+SELECT c.cliente_nome
+FROM cliente c
+JOIN conta cc ON c.cliente_cod = cc.cliente_cliente_cod
+WHERE cc.saldo = (SELECT MAX(saldo) FROM conta);
+
 -- 3. Liste as cidades onde a quantidade de clientes é maior que a quantidade média de clientes por cidade.
+--R:
+SELECT c.cidade
+FROM cliente c
+GROUP BY c.cidade
+HAVING COUNT(c.cliente_cod) > (SELECT AVG(quantidade) FROM (SELECT COUNT(cliente_cod) AS quantidade FROM cliente GROUP BY cidade));
 
 -- Parte 2 – Subconsultas Multilinha
 -- 4. Liste os nomes dos clientes com saldo igual a qualquer um dos dez maiores saldos registrados.
