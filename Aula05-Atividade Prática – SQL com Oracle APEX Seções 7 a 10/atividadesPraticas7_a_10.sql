@@ -169,3 +169,6 @@ WITH media_saldo AS (
 )
 SELECT c.cliente_nome, c.cidade, cc.saldo
 FROM cliente c
+JOIN conta cc ON c.cliente_cod = cc.cliente_cliente_cod
+JOIN media_saldo ms ON c.cidade = ms.cidade
+WHERE cc.saldo > ms.media;
