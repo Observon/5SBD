@@ -110,16 +110,62 @@ HAVING COUNT(c.cliente_cod) > (SELECT AVG(quantidade) FROM (SELECT COUNT(cliente
 
 -- Parte 2 – Subconsultas Multilinha
 -- 4. Liste os nomes dos clientes com saldo igual a qualquer um dos dez maiores saldos registrados.
+--R:
+SELECT c.cliente_nome
+FROM cliente c
+JOIN conta cc ON c.cliente_cod = cc.cliente_cliente_cod
+WHERE cc.saldo IN (SELECT saldo FROM (SELECT saldo FROM conta ORDER BY saldo DESC) WHERE ROWNUM <= 10);
 -- 5. Liste os clientes que possuem saldo menor que todos os saldos dos clientes da cidade de Niterói.
+--R:
+SELECT c.cliente_nome
+FROM cliente c
+JOIN conta cc ON c.cliente_cod = cc.cliente_cliente_cod
+WHERE cc.saldo < ALL (SELECT saldo FROM conta WHERE cliente_cliente_cod IN (SELECT cliente_cod FROM cliente WHERE cidade = 'Niterói'));
+
 -- 6. Liste os clientes cujos saldos estão entre os saldos de clientes de Volta Redonda.
+--R:
+SELECT c.cliente_nome
+FROM cliente c
+JOIN conta cc ON c.cliente_cod = cc.cliente_cliente_cod
+WHERE cc.saldo BETWEEN (SELECT MIN(saldo) FROM conta WHERE cliente_cliente_cod IN (SELECT cliente_cod FROM cliente WHERE cidade = 'Volta Redonda'))
+AND (SELECT MAX(saldo) FROM conta WHERE cliente_cliente_cod IN (SELECT cliente_cod FROM cliente WHERE cidade = 'Volta Redonda'));
 
 -- Parte 3 – Subconsultas Correlacionadas
 -- 7. Exiba os nomes dos clientes cujos saldos são maiores que a média de saldo das contas da mesma agência.
+--R:
+SELECT c.cliente_nome                                                               
+FROM cliente c
+JOIN conta cc ON c.cliente_cod = cc.cliente_cliente_cod
+WHERE cc.saldo > (SELECT AVG(saldo) FROM conta WHERE agencia_agencia_cod = cc.agencia_agencia_cod);
+
 -- 8. Liste os nomes e cidades dos clientes que têm saldo inferior à média de sua própria cidade.
+--R:
+SELECT c.cliente_nome, c.cidade
+FROM cliente c
+JOIN conta cc ON c.cliente_cod = cc.cliente_cliente_cod
+WHERE cc.saldo < (SELECT AVG(saldo) FROM conta WHERE cliente_cliente_cod IN (SELECT cliente_cod FROM cliente WHERE cidade = c.cidade));
 
 -- Parte 4 – Subconsultas com EXISTS e NOT EXISTS
 -- 9. Liste os nomes dos clientes que possuem pelo menos uma conta registrada no banco.
+--R:
+SELECT c.cliente_nome
+FROM cliente c
+WHERE EXISTS (SELECT 1 FROM conta cc WHERE c.cliente_cod = cc.cliente_cliente_cod);
+
 -- 10. Liste os nomes dos clientes que ainda não possuem conta registrada no banco.
+--R:
+SELECT c.cliente_nome
+FROM cliente c
+WHERE NOT EXISTS (SELECT 1 FROM conta cc WHERE c.cliente_cod = cc.cliente_cliente_cod);
 
 -- Parte 5 – Subconsulta Nomeada com WITH
 -- 11.Usando a cláusula WITH, calcule a média de saldo por cidade e exiba os clientes que possuem saldo acima da média de sua cidade.
+--R:
+WITH media_saldo AS (
+    SELECT c.cidade, AVG(cc.saldo) AS media
+    FROM cliente c
+    JOIN conta cc ON c.cliente_cod = cc.cliente_cliente_cod
+    GROUP BY c.cidade
+)
+SELECT c.cliente_nome, c.cidade, cc.saldo
+FROM cliente c
